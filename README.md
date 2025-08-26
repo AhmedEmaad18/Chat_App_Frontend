@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Overview
 
-## Getting Started
+This is a real-time chat application built with Next.js, Socket.io, and Node.js/Express. Users can start conversations, send text and image messages, and receive updates in real-time.
 
-First, run the development server:
+Database Structure
+Collections
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Users
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+{
+  "_id": "ObjectId",
+  "username": "string",
+  "email": "string",
+  "passwordHash": "string",
+  "createdAt": "Date"
+}
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Conversations
 
-## Learn More
+{
+  "_id": "ObjectId",
+  "participants": ["UserId1", "UserId2"],
+  "createdAt": "Date",
+  "updatedAt": "Date"
+}
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Messages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+{
+  "_id": "ObjectId",
+  "conversationId": "ConversationId",
+  "senderId": "UserId",
+  "receiverId": "UserId",
+  "text": "string",
+  "imageUrl": "string (optional)",
+  "createdAt": "Date"
+}
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Relationships:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    A conversation links multiple participants (usually 2 for private chats).
+    
+    Messages are tied to a conversation and store sender/receiver info.
+
+Technical Approach
+1. Frontend
+
+    Built with Next.js and React Hooks.
+    
+    Framer Motion for animations.
+    
+    Real-time updates using Socket.io client.
+    
+    Image uploads handled via <input type="file"> and FormData.
+
+2. Backend
+
+    Node.js/Express API.
+    
+    REST endpoints for users, conversations, and messages.
+    
+    Socket.io server emits/receives real-time events:
+    
+    addUser – register connected users
+    
+    sendMessage – broadcast new messages
+    
+    newConversation – notify participants of new chats
+
+3. Real-time Workflow
+
+    User connects → Socket registers them via addUser.
+    
+    Sending a message:
+    
+    Saved in database.
+    
+    Broadcast to the recipient via sendMessage.
+    
+    New conversations:
+    
+    Created via API.
+    
+    Emitted to participants via newConversation.
+
+- Tech Stack
+
+  Frontend: Next.js, React, TailwindCSS, Framer Motion, Socket.io-client
+  
+  Backend: Node.js, Express, Socket.io, MongoDB
+  
